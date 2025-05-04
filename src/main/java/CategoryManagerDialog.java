@@ -13,10 +13,12 @@ public class CategoryManagerDialog extends JDialog {
     private final JTable categoryTable;
     private final CategoryStorage categoryStorage;
     private final PayloadStorage payloadStorage;
+    private PayloadsManagerTab payloadsManagerTab;
 
-    public CategoryManagerDialog(Component parent, CategoryStorage categoryStorage, PayloadStorage payloadStorage) {
+    public CategoryManagerDialog(Component parent, PayloadsManagerTab payloadsManagerTab, CategoryStorage categoryStorage, PayloadStorage payloadStorage) {
         this.categoryStorage = categoryStorage;
         this.payloadStorage = payloadStorage;
+        this.payloadsManagerTab = payloadsManagerTab;
 
         setTitle("Manage Category");
         setModal(true);
@@ -37,7 +39,7 @@ public class CategoryManagerDialog extends JDialog {
         column.setMaxWidth(50);
         column.setMinWidth(50);
 
-        loadCategoryData();
+        refreshTable();
 
         JScrollPane scrollPane = new JScrollPane(categoryTable);
 
@@ -62,9 +64,9 @@ public class CategoryManagerDialog extends JDialog {
         setVisible(true);
     }
 
-    private void loadCategoryData() {
+    private void refreshTable() {
         categoryTableModel.setRowCount(0); // Clear existing rows
-
+        payloadsManagerTab.refreshTable();
         List<Category> categories = categoryStorage.getCategories();
         for (int i = 0; i < categories.size(); i++) {
             categoryTableModel.addRow(new Object[]{i + 1, categories.get(i).category()});
@@ -75,7 +77,7 @@ public class CategoryManagerDialog extends JDialog {
         String name = JOptionPane.showInputDialog(this, "Enter category name:");
         if (name != null && !name.trim().isEmpty()) {
             categoryStorage.addCategory(new Category(name.trim()));
-            loadCategoryData();
+            refreshTable();
         }
     }
 
@@ -87,7 +89,7 @@ public class CategoryManagerDialog extends JDialog {
             if (newName != null && !newName.trim().isEmpty()) {
                 categoryStorage.updateCategoryAt(selectedRow, new Category(newName.trim()));
                 payloadStorage.updatePayloadCategory(currentName, newName.trim());
-                loadCategoryData();
+                refreshTable();
             }
         } else {
             JOptionPane.showMessageDialog(this, "Please select a category to edit!", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -102,7 +104,7 @@ public class CategoryManagerDialog extends JDialog {
             if (confirm == JOptionPane.YES_OPTION) {
                 categoryStorage.deleteCategoryAt(selectedRow);
                 payloadStorage.updatePayloadCategory(categoryName, "");
-                loadCategoryData();
+                refreshTable();
             }
         } else {
             JOptionPane.showMessageDialog(this, "Please select a category to delete!", "Warning", JOptionPane.WARNING_MESSAGE);

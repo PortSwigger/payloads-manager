@@ -40,25 +40,21 @@ public class PayloadsManagerTab implements ITab {
             }
         };
 
+
         TableColumn column = payloadTable.getColumnModel().getColumn(0);
         column.setPreferredWidth(50);
         column.setMaxWidth(50);
         column.setMinWidth(50);
 
-        updatePayloadsTable();
+        refreshTable();
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JButton manageCategoryButton = new JButton("Manage Category");
-        manageCategoryButton.addActionListener(e -> {
-            CategoryManagerDialog dialog = new CategoryManagerDialog( panel, categoryStorage, payloadStorage);
-            dialog.setModal(true);
-            dialog.setVisible(true);
+        manageCategoryButton.addActionListener(e -> new CategoryManagerDialog( panel, this, categoryStorage, payloadStorage));
 
-            updatePayloadsTable();
-        });
 
         JButton addButton = new JButton("Add Payload");
         addButton.addActionListener(this::addPayload);
@@ -116,17 +112,13 @@ public class PayloadsManagerTab implements ITab {
         panel.add(mainPanel, BorderLayout.CENTER);
     }
 
-    public JPanel getPanel() {
-        return panel;
-    }
-
     private void deletePayload(ActionEvent e) {
         int selectedRow = payloadTable.getSelectedRow();
         if (selectedRow >= 0) {
             int confirm = JOptionPane.showConfirmDialog(panel, "Delete selected payload?", "Confirm", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 payloadStorage.deletePayloadAt(selectedRow);
-                updatePayloadsTable();
+                refreshTable();
             }
         } else {
             JOptionPane.showMessageDialog(panel, "Please select a payload to delete!", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -192,7 +184,7 @@ public class PayloadsManagerTab implements ITab {
                 JOptionPane.showMessageDialog(null, "Payload already exists", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 payloadStorage.addPayload(newPayload);
-                updatePayloadsTable();
+                refreshTable();
             }
         }
     }
@@ -254,11 +246,11 @@ public class PayloadsManagerTab implements ITab {
 
             Payload updatedPayload = new Payload(newName, newPayload, new Category(newCategory));
             payloadStorage.updatePayloadAt(selectedRow, updatedPayload);
-            updatePayloadsTable();
+            refreshTable();
         }
     }
 
-    private void updatePayloadsTable() {
+    public void refreshTable() {
         tableModel.setRowCount(0);
         List<Payload> payloads = payloadStorage.getPayloads();
         for (int i = 0; i < payloads.size(); i++) {
@@ -323,14 +315,13 @@ public class PayloadsManagerTab implements ITab {
                     }
                 }
 
-                updatePayloadsTable();
+                refreshTable();
                 JOptionPane.showMessageDialog(null, "Payloads imported successfully");
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "Error importing payloads: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
-
 
     @Override
     public String getTabCaption() {
