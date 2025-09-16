@@ -7,7 +7,7 @@ SerialVersion: 1
 MinPlatformVersion: 2
 ProOnly: False
 Author: luqmanhy
-ShortDescription: This extension aids in managing custom payloads within Burp Suite, allowing users to use, add, edit, import, and export payloads, enhancing workflow efficiency during testing.
+ShortDescription: Quickly add payloads from a managed list directly into your request/response.
 EntryPoint: payloads-manager-0.0.2-jar-with-dependencies.jar
 BuildCommand: mvn clean install
 SupportedProducts: Pro, Community
