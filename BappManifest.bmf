@@ -3,7 +3,7 @@ ExtensionType: 1
 Name: Payloads Manager
 RepoName: payloads-manager
 ScreenVersion: 0.0.2
-SerialVersion: 1
+SerialVersion: 2
 MinPlatformVersion: 2
 ProOnly: False
 Author: luqmanhy
